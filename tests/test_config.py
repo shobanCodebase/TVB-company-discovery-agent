@@ -42,3 +42,14 @@ def test_groq_min_request_interval_configurable(monkeypatch):
     monkeypatch.setenv("GROQ_MIN_REQUEST_INTERVAL_SECONDS", "5")
     settings = Settings()
     assert settings.groq_min_request_interval_seconds == 5.0
+
+def test_max_discovery_rounds_defaults_to_5(monkeypatch):
+    monkeypatch.delenv("MAX_DISCOVERY_ROUNDS", raising=False)
+    settings = Settings()
+    assert settings.max_discovery_rounds == 5
+
+
+def test_max_discovery_rounds_configurable(monkeypatch):
+    monkeypatch.setenv("MAX_DISCOVERY_ROUNDS", "2")
+    settings = Settings()
+    assert settings.max_discovery_rounds == 2

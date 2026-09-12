@@ -79,6 +79,9 @@ class Settings:
     max_candidates_for_research: int = field(
         default_factory=lambda: _get_int("MAX_CANDIDATES_FOR_RESEARCH", 20)
     )
+    max_discovery_rounds: int = field(
+        default_factory=lambda: _get_int("MAX_DISCOVERY_ROUNDS", 5)
+    )
     max_research_iterations: int = field(default_factory=lambda: _get_int("MAX_RESEARCH_ITERATIONS", 60))
     request_timeout_seconds: float = field(default_factory=lambda: _get_float("REQUEST_TIMEOUT_SECONDS", 15.0))
     max_retries: int = field(default_factory=lambda: _get_int("MAX_RETRIES", 2))

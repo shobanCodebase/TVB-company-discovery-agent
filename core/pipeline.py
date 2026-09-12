@@ -30,7 +30,12 @@ from core.validators import qualify
 
 logger = logging.getLogger(__name__)
 
-MAX_DISCOVERY_ROUNDS = 5
+# Default kept here for callers that don't pass an explicit settings
+# object; run_pipeline's actual default now reads from
+# settings.max_discovery_rounds so it's configurable via .env/Streamlit
+# secrets (e.g. lowering it for hosted deployments where a long-running
+# single request risks a tab-disconnect or platform idle/resource reset).
+DEFAULT_MAX_DISCOVERY_ROUNDS = 5
 
 
 @dataclass
@@ -72,9 +77,11 @@ def run_pipeline(
     research_agent: Optional[ResearchAgent] = None,
     contact_agent: Optional[ContactAgent] = None,
     on_progress: Optional[ProgressCallback] = None,
-    max_rounds: int = MAX_DISCOVERY_ROUNDS,
+    max_rounds: Optional[int] = None,
 ) -> PipelineResult:
     settings = settings or default_settings
+    if max_rounds is None:
+        max_rounds = settings.max_discovery_rounds
     discovery_agent = discovery_agent or DiscoveryAgent(settings=settings)
     research_agent = research_agent or ResearchAgent(settings=settings)
     contact_agent = contact_agent or ContactAgent()

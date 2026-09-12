@@ -230,3 +230,37 @@ def test_on_progress_callback_is_invoked():
     )
     assert len(progress_calls) > 0
     assert any("Round 1" in msg for msg in progress_calls)
+
+def test_run_pipeline_uses_settings_max_discovery_rounds_when_not_overridden():
+    settings = Settings(max_discovery_queries=5, max_discovery_rounds=2)
+
+    discovery_agent = MagicMock()
+    counter = {"n": 0}
+
+    def fake_discover(offset=0):
+        counter["n"] += 1
+        return [make_candidate(f"Co{counter['n']}", f"co{counter['n']}.com")]
+
+    discovery_agent.discover.side_effect = fake_discover
+
+    research_agent = MagicMock()
+    research_agent.llm_service = MagicMock()
+    research_agent.llm_service.quota_exceeded = False
+    research_agent.research_many.side_effect = lambda candidates: [
+        CompanyResearch(company_name=c.company_name, domain=c.domain, status=QualificationStatus.REJECTED)
+        for c in candidates
+    ]
+    contact_agent = MagicMock()
+    contact_agent.process_many.side_effect = lambda researches, min_amount, max_amount: researches
+
+    # Note: no max_rounds passed here -> should fall back to settings.max_discovery_rounds (2)
+    result = run_pipeline(
+        target_leads=100,
+        settings=settings,
+        discovery_agent=discovery_agent,
+        research_agent=research_agent,
+        contact_agent=contact_agent,
+    )
+
+    assert result.rounds_run == 2
+    assert discovery_agent.discover.call_count == 2

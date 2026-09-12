@@ -255,36 +255,20 @@ pytest -q
 Current local validation: **191 tests passing**, 0 failed, all using mocked external services (no
 real API keys required to run the suite).
 
-## Streamlit Community Cloud Deployment
+## Deployment
 
-1. Push this repository to GitHub (public, since the evaluator needs to open it without cloning).
-2. Go to [Streamlit Community Cloud](https://share.streamlit.io) and sign in.
-3. Click **New app** and select this repository.
-4. Select the branch you want deployed (e.g. `main`).
-5. Set the entry point file to `app.py`.
-6. Before deploying, open **Advanced settings → Secrets** and configure your secrets there (see
-   below) — **do not commit any API keys to the repository**.
-7. Click **Deploy**.
-8. Once the build finishes, open the public URL Streamlit gives you.
-9. Click **RUN DISCOVERY** in the deployed app to confirm it performs a genuine, fresh discovery run
-   — the deployed instance behaves identically to a local run: no hardcoded lead list, no bundled
-   demo data, live sources queried on demand.
-
-## Streamlit Secrets
-
-In the Streamlit Cloud **Secrets** panel, paste TOML in this shape (replace with your own real
-values — these are placeholders only, never commit actual keys anywhere in this repository):
+Push this repo to GitHub, then deploy on [Streamlit Community Cloud](https://share.streamlit.io):
+select the repo, set the entry point to `app.py`, and add your API keys under **Advanced settings →
+Secrets** in this format:
 
 ```toml
-GROQ_API_KEY = "your-groq-key-here"
-SEARCH_API_KEY = "your-tavily-key-here"
-HUNTER_API_KEY = "your-hunter-key-here"
+GROQ_API_KEY = "your-groq-key"
+SEARCH_API_KEY = "your-tavily-key"
+HUNTER_API_KEY = "your-hunter-key"
 ```
 
-`HUNTER_API_KEY` may be omitted if you don't have one — the app degrades gracefully (see
-Environment Variables above). Locally, the same values go in `.env` (via `.env.example` as a
-template); on Streamlit Cloud, they're read from this Secrets panel and mirrored into the
-environment at app startup — both paths feed the same configuration code, so behavior is identical.
+`HUNTER_API_KEY` is optional. Never commit real keys — `.env` is for local development only and is
+gitignored.
 
 ## Security
 
